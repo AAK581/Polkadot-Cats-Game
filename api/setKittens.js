@@ -34,7 +34,6 @@ export default async function handler(req, res) {
     const config = networkConfigs[chainId];
     if (!config) return res.status(400).json({ error: "Unsupported chainId" });
 
-
     const provider = new ethers.JsonRpcProvider(config.rpc);
     const signer = wallet.connect(provider);
     const balance = await provider.getBalance(wallet.address);
@@ -52,6 +51,7 @@ export default async function handler(req, res) {
     const userBalance = await provider.getBalance(userAddress);
     console.log(`User ${userAddress} balance: ${ethers.formatEther(userBalance)} DEV`);
 
+    // Send drip transaction but don't wait for confirmation
     if (shouldDrip && userBalance < ethers.parseEther("0.01")) {
       console.log("Dripping 0.01 DEV to user");
       const dripTx = await signer.sendTransaction({
@@ -59,8 +59,8 @@ export default async function handler(req, res) {
         value: ethers.parseEther("0.01"),
         gasLimit: 21000,
       });
-      await dripTx.wait();
-      console.log("Drip tx:", dripTx.hash);
+      console.log("Drip tx sent:", dripTx.hash);
+      // Don't await dripTx.wait() - just continue
     }
 
     const contract = new ethers.Contract(
@@ -302,6 +302,13 @@ export default async function handler(req, res) {
       "stateMutability": "view"
     },
     {
+      "type": "function",
+      "name": "withdrawFunds",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
       "type": "event",
       "name": "DonationReceived",
       "inputs": [
@@ -406,11 +413,7 @@ export default async function handler(req, res) {
     const tx = await contract.setKittens(userAddress, kittens, { gasLimit: 300000 });
     console.log("setKittens API: Transaction sent, hash:", tx.hash);
 
-    const receipt = await Promise.race([
-      tx.wait(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 30000))
-    ]);
-
+    // Return immediately without waiting for confirmation
     console.log("setKittens API: Success", { txHash: tx.hash });
     return res.status(200).json({ txHash: tx.hash });
 
