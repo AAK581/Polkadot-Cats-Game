@@ -15,9 +15,9 @@
   window.BlockchainPlugin.pendingKittenCollections = [];
   window.BlockchainPlugin.initialized = false;
 
-  // Contract address for Polkadot EVM Testnet
+  // Contract address for FLOW EVM Testnet
   const contractAddresses = {
-    1287: '0xFee91cdC10A1663d69d6891d8b6621987aACe2EF'
+    545: '0xA45a75B3523334bf4017b0BB9D76d4E06661fba3'
   };
 
   // Get contract address based on connected network
@@ -25,14 +25,14 @@
     if (window.ethereum) {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const network = await provider.getNetwork();
-      return contractAddresses[network.chainId] || contractAddresses[1287];
+      return contractAddresses[network.chainId] || contractAddresses[545];
     }
-    return contractAddresses[1287];
+    return contractAddresses[545];
   }
 
   // Validate supported chain IDs
   function isValidChain(chainId) {
-    return chainId === 1287n; // Polkadot EVM Testnet
+    return chainId === 545n; // FLOW EVM Testnet
   }
 
   // Initialize kitten variable with persistence
@@ -419,7 +419,7 @@
         console.log("Still attempting");
         console.log("setKittens: Network chainId:", network.chainId);
         const chainIdNum = Number(network.chainId);
-        console.log("Before fetch", { url: 'https://polkadot-cats-game.vercel.app/api/setKittens', body: JSON.stringify({ kittens: maxNewKittens, userAddress, chainId: chainIdNum }) });
+        console.log("Before fetch", { url: 'https://rpg-game-monad-cats.vercel.app/api/setKittens', body: JSON.stringify({ kittens: maxNewKittens, userAddress, chainId: chainIdNum }) });
         const controller = new AbortController();
         const timeoutId = setTimeout(() => {
           console.error("Fetch timed out after 20s");
@@ -427,7 +427,7 @@
         }, 20000);
         let response;
         try {
-          response = await fetch('https://polkadot-cats-game.vercel.app/api/setKittens', {
+          response = await fetch('https://rpg-game-monad-cats.vercel.app/api/setKittens', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ kittens: maxNewKittens, userAddress, chainId: chainIdNum }),
@@ -474,7 +474,7 @@
         const network = await provider.getNetwork();
         
         if (!isValidChain(network.chainId)) {
-          $gameMessage.add("Please switch to Polkadot EVM Testnet (Chain ID: 1287).");
+          $gameMessage.add("Please switch to FLOW EVM Testnet (Chain ID: 545).");
           $gameVariables.setValue(12, 0);
           return;
         }
@@ -493,7 +493,7 @@
     };
 
     // Fund contract (owner only)
-    $gameSystem.fundContract = async function(devAmount) {
+    $gameSystem.fundContract = async function(flowAmount) {
       if (!window.ethereum) {
         $gameMessage.add("Please connect wallet first.");
         return;
@@ -508,7 +508,7 @@
         
         const network = await provider.getNetwork();
         if (!isValidChain(network.chainId)) {
-          $gameMessage.add("Please switch to Polkadot EVM Testnet.");
+          $gameMessage.add("Please switch to FLOW EVM Testnet.");
           return;
         }
 
@@ -518,12 +518,12 @@
           return;
         }
 
-        const amountInWei = ethers.parseEther(devAmount.toString());
+        const amountInWei = ethers.parseEther(flowAmount.toString());
         const tx = await contract.fundContract({ value: amountInWei });
         $gameMessage.add("Funding contract...");
         
         await tx.wait();
-        $gameMessage.add(`Successfully funded ${devAmount} DEV!`);
+        $gameMessage.add(`Successfully funded ${flowAmount} FLOW!`);
         console.log("fundContract: Funded");
       } catch (error) {
         console.error("fundContract: Error:", error.message);
