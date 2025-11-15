@@ -17,7 +17,7 @@
 
   // Contract address for Polkadot EVM Testnet
   const contractAddresses = {
-    1287: '0xFee91cdC10A1663d69d6891d8b6621987aACe2EF'
+    1287: '0xEDDe9fc8ca8668046f9EAf9b64FDc94620518E26'
   };
 
   // Get contract address based on connected network

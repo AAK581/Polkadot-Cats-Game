@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     const networkConfigs = {
-      1287: { rpc: "https://rpc.testnet.moonbeam.network/", contractAddress: "0xFee91cdC10A1663d69d6891d8b6621987aACe2EF" }
+      1287: { rpc: "https://rpc.testnet.moonbeam.network/", contractAddress: "0xEDDe9fc8ca8668046f9EAf9b64FDc94620518E26" }
     };
 
     const config = networkConfigs[chainId];
